@@ -25,8 +25,90 @@ void loadTodos();
 root.addEventListener("submit", handleSubmit);
 root.addEventListener("click", handleClick);
 
+function isRestorableField(element) {
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLSelectElement
+  );
+}
+
+function escapeAttributeValue(value) {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function getElementSelector(element) {
+  if (element.id) {
+    return `#${CSS.escape(element.id)}`;
+  }
+
+  const selector = [element.tagName.toLowerCase()];
+
+  if (element.name) {
+    selector.push(`[name="${escapeAttributeValue(element.name)}"]`);
+  }
+
+  if (element instanceof HTMLInputElement && element.type) {
+    selector.push(`[type="${escapeAttributeValue(element.type)}"]`);
+  }
+
+  return selector.join("");
+}
+
+function captureFocusedField() {
+  const activeElement = document.activeElement;
+
+  if (!isRestorableField(activeElement) || !root.contains(activeElement)) {
+    return null;
+  }
+
+  const snapshot = {
+    selector: getElementSelector(activeElement),
+    value: activeElement.value,
+  };
+
+  if (
+    typeof activeElement.selectionStart === "number" &&
+    typeof activeElement.selectionEnd === "number"
+  ) {
+    snapshot.selectionStart = activeElement.selectionStart;
+    snapshot.selectionEnd = activeElement.selectionEnd;
+    snapshot.selectionDirection = activeElement.selectionDirection;
+  }
+
+  return snapshot;
+}
+
+function restoreFocusedField(snapshot) {
+  if (!snapshot) {
+    return;
+  }
+
+  const nextElement = root.querySelector(snapshot.selector);
+  if (!isRestorableField(nextElement)) {
+    return;
+  }
+
+  nextElement.value = snapshot.value;
+  nextElement.focus();
+
+  if (
+    typeof snapshot.selectionStart === "number" &&
+    typeof snapshot.selectionEnd === "number" &&
+    typeof nextElement.setSelectionRange === "function"
+  ) {
+    nextElement.setSelectionRange(
+      snapshot.selectionStart,
+      snapshot.selectionEnd,
+      snapshot.selectionDirection || "none",
+    );
+  }
+}
+
 function render(state) {
+  const focusedField = captureFocusedField();
   root.innerHTML = renderApp(state);
+  restoreFocusedField(focusedField);
 }
 
 async function loadTodos(filter = store.getState().filter) {
