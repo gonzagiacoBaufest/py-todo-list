@@ -2,6 +2,8 @@
 
 Backend REST API para gestión de tareas (TODO list) construido con FastAPI y SQLAlchemy.
 
+Incluye un frontend servido por la misma aplicación en `/`, construido con HTML, CSS y JavaScript vanilla.
+
 Los datos se almacenan en una base de datos SQLite en memoria, por lo que se reinician al detener el servidor.
 
 ## Requisitos
@@ -21,6 +23,8 @@ python -m uvicorn app.main:app --reload
 ```
 
 El servidor se levanta en `http://localhost:8000`.
+
+Al abrir esa URL se muestra la interfaz web para crear, editar, completar y eliminar tareas.
 
 ## Endpoints
 
