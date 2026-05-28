@@ -287,13 +287,28 @@ function renderTodoCard(todo, editingId) {
           ${todo.completed ? "Completada" : "En progreso"}
         </span>
         <div class="todo-actions">
-          <button class="button-icon" data-action="toggle-complete" data-id="${todo.id}">
+          <button
+            class="button-icon"
+            data-action="toggle-complete"
+            data-id="${todo.id}"
+            aria-label="${todo.completed ? "Marcar como pendiente" : "Marcar como completada"}"
+          >
             ${todo.completed ? "↺" : "✓"}
           </button>
-          <button class="button-icon" data-action="edit" data-id="${todo.id}">
+          <button
+            class="button-icon"
+            data-action="edit"
+            data-id="${todo.id}"
+            aria-label="${isEditing ? "Cancelar edición" : "Editar tarea"}"
+          >
             ${isEditing ? "×" : "✎"}
           </button>
-          <button class="button-icon danger" data-action="delete" data-id="${todo.id}">
+          <button
+            class="button-icon danger"
+            data-action="delete"
+            data-id="${todo.id}"
+            aria-label="Eliminar tarea"
+          >
             🗑
           </button>
         </div>
